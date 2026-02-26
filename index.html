@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoteX — Register, Login & Vote</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="card">
+            <div class="topbar">
+                <button class="circle-btn" id="themeToggle" title="Toggle theme">🌓</button>
+            </div>
+
+            <div class="brand">
+                <div class="logo">X</div>
+                <div>
+                    <h1>VoteX</h1>
+                    <div class="sub" style="margin-bottom:0">Secure Voting Portal</div>
+                    <div class="help" style="font-size:10px;opacity:0.6">by Ankit Paswan</div>
+                </div>
+            </div>
+
+            <!-- Register (Face-First) -->
+            <div class="view" id="view-register">
+                <div id="register-step-1" class="stack text-center">
+                    <div class="logo" style="margin: 0 auto 10px">📷</div>
+                    <h2>Secure Registration</h2>
+                    <div class="sub">Scan your face to start. One person, one account.</div>
+                    <button class="btn" id="btnStartFaceReg">Start Face Scan</button>
+                    <div id="reg-scan-error" class="help" style="color:#ffb4b4"></div>
+                </div>
+
+                <div id="register-step-2" class="stack hidden">
+                    <div class="between mb-16">
+                        <div style="font-weight:700">Face Verified ✅</div>
+                        <span class="note">Completing setup...</span>
+                    </div>
+                    <div>
+                        <label>Choose Username</label>
+                        <div class="field">
+                            <span>👤</span>
+                            <input id="reg-username" placeholder="Username (min 3 chars)" />
+                        </div>
+                    </div>
+                    <div>
+                        <label>Set Password</label>
+                        <div class="field">
+                            <span>🔒</span>
+                            <input id="reg-password" type="password" placeholder="Create password" />
+                        </div>
+                        <div class="pw-meter mt-10">
+                            <div id="pwStrength"></div>
+                        </div>
+                    </div>
+                    <div class="mt-10">
+                        <label class="toggle">
+                            <input type="checkbox" id="check-reg-bio-auto" checked />
+                            <span>Also enable Fingerprint Login</span>
+                        </label>
+                    </div>
+                    <button class="btn" id="btnCompleteReg">Create My Account</button>
+                    <div id="register-error" class="help" style="color:#ffb4b4"></div>
+                </div>
+
+                <div class="links mt-10">
+                    Already have an account? <span class="link" data-goto="login">Login</span> •
+                    <span class="link" data-goto="admin-login">Admin Login</span>
+                </div>
+            </div>
+
+            <!-- Login -->
+            <div class="view" id="view-login">
+                <div class="stack">
+                    <div>
+                        <label>Username</label>
+                        <div class="field">
+                            <span>👤</span>
+                            <input id="login-username" placeholder="Enter username" />
+                        </div>
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <div class="field">
+                            <span>🔑</span>
+                            <input id="login-password" type="password" placeholder="Enter password" />
+                            <button id="toggleLoginPass" class="circle-btn" style="width:34px;height:34px"
+                                title="Show/Hide">👁️</button>
+                        </div>
+                    </div>
+                    <button class="btn" id="btnLogin">Login</button>
+                    <div class="row" style="margin-top: -8px">
+                        <button class="btn secondary" id="btnFaceLogin" style="flex:1">
+                            <span>📷</span> Login with Face
+                        </button>
+                        <button class="btn secondary" id="btnBiometricLogin" style="flex:1">
+                            <span>🧬</span> Login with Biometrics
+                        </button>
+                    </div>
+                    <div id="login-error" class="help" style="color:#ffb4b4"></div>
+                </div>
+                <div class="links mt-10">
+                    New here? <span class="link" data-goto="register">Create account</span> •
+                    <span class="link" data-goto="admin-login">Admin Login</span>
+                </div>
+            </div>
+
+            <!-- Admin Login -->
+            <div class="view" id="view-admin-login">
+                <div class="stack">
+                    <div>
+                        <label>Admin Username</label>
+                        <div class="field">
+                            <span>🛡️</span>
+                            <input id="admin-username" placeholder="admin" />
+                        </div>
+                    </div>
+                    <div>
+                        <label>Admin Password</label>
+                        <div class="field">
+                            <span>🔐</span>
+                            <input id="admin-password" type="password" placeholder="admin123" />
+                            <button id="toggleAdminPass" class="circle-btn" style="width:34px;height:34px"
+                                title="Show/Hide">👁️</button>
+                        </div>
+                    </div>
+                    <button class="btn" id="btnAdminLogin">Login as Admin</button>
+                    <div id="admin-error" class="help" style="color:#ffb4b4"></div>
+                </div>
+                <div class="links mt-10">
+                    <span class="link" data-goto="login">Back to User Login</span>
+                </div>
+            </div>
+
+            <!-- Vote -->
+            <div class="view" id="view-vote">
+                <div class="between">
+                    <div class="sub" id="welcomeUser">Welcome!</div>
+                    <button class="btn ghost" id="btnLogoutUser" style="width:auto;padding:8px 12px">Logout</button>
+                </div>
+
+                <h3 class="mt-16">Vote your favorite!</h3>
+                <div class="options" id="vote-options"></div>
+
+                <div id="user-vote-info" class="help"></div>
+
+                <div class="mt-16" id="user-results-wrap">
+                    <div class="between">
+                        <div>Results</div>
+                        <small class="note" id="results-note"></small>
+                    </div>
+                    <div class="results" id="results"></div>
+                </div>
+
+                <!-- Biometric Registration Section -->
+                <div class="mt-20 p-12"
+                    style="background:var(--card-strong);border-radius:var(--radius-sm);border:1px solid var(--border)">
+                    <div class="between">
+                        <div>
+                            <div style="font-weight:600;font-size:14px">Biometric Lock</div>
+                            <div class="help" style="margin-top:2px">Secure your account with Fingerprint/FaceID</div>
+                        </div>
+                        <button class="btn secondary" id="btnRegBiometrics" style="width:auto;padding:8px 14px">Set
+                            up</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div class="view" id="view-admin">
+                <div class="between">
+                    <div class="sub">Admin Panel</div>
+                    <button class="btn ghost" id="btnLogoutAdmin" style="width:auto;padding:8px 12px">Logout</button>
+                </div>
+
+                <div class="stack mt-10">
+                    <div>
+                        <label>Manage options</label>
+                        <div class="row">
+                            <div class="field" style="flex:1">
+                                <span>📝</span>
+                                <input id="option-input" placeholder="Add option and press + or Enter" />
+                            </div>
+                            <button class="btn secondary" id="btnAddOption"
+                                style="width:auto;padding:10px 14px">＋</button>
+                        </div>
+                        <div class="chip-wrap mt-10" id="option-chips"></div>
+                        <small class="note">Tip: Click × to remove an option. No duplicates allowed.</small>
+                    </div>
+
+                    <div class="row">
+                        <label class="toggle">
+                            <input type="checkbox" id="toggleVoting" />
+                            <span>Voting Open</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="toggleResults" />
+                            <span>Show Results to Users</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="toggleFaceCheck" />
+                            <span>Face Verification Required</span>
+                        </label>
+                    </div>
+
+                    <div class="between">
+                        <div class="sub" id="totalVotes">Total votes: 0</div>
+                        <div class="row">
+                            <button class="btn danger" id="btnResetVotes" style="width:auto">Reset Votes</button>
+                            <button class="btn" id="btnExport" style="width:auto">Export</button>
+                            <label class="btn secondary" style="width:auto;cursor:pointer">
+                                Import
+                                <input type="file" id="fileImport" accept="application/json" class="hidden" />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-10">
+                        <div class="between">
+                            <div>Live Results</div>
+                            <button class="btn secondary" id="btnSort" style="width:auto;padding:8px 12px">Sort by
+                                votes</button>
+                        </div>
+                        <div class="results mt-10" id="admin-results"></div>
+                    </div>
+                </div>
+            </div>
+
+            <small class="note"> PROJECT BY ANKIT PASWAN FOR ANNOUNCEMENT OF STUDENT UNION ELECTION
+                ANONYMOUSLY</small>
+        </div>
+    </div>
+
+    <!-- Face Verification Modal -->
+    <div class="modal-overlay hidden" id="faceModal">
+        <div class="modal-card">
+            <div class="between mb-16">
+                <div style="font-weight:700;font-size:18px">Facial Verification</div>
+                <button class="circle-btn" id="btnCloseFace" style="width:30px;height:30px">×</button>
+            </div>
+            <div class="camera-wrap">
+                <video id="video" width="320" height="240" autoplay muted playsinline></video>
+                <canvas id="overlay"></canvas>
+                <div class="camera-status" id="faceStatus">Initializing camera...</div>
+            </div>
+            <div class="help mt-10 text-center">Please look directly at the camera to verify your identity before
+                voting.</div>
+        </div>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+    <script defer src="script.js"></script>
+</body>
+
+</html>
